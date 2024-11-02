@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Placement Preparation Chatbot</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Placement Preparation Chatbot</h1>
+        <div id="chatbox">
+            <div id="chatlog"></div>
+        </div>
+        <input type="text" id="user_input" placeholder="Ask your question...">
+        <button id="send_btn">Send</button>
+    </div>
+    
+    <script>
+        document.getElementById("send_btn").onclick = function() {
+            var user_input = document.getElementById("user_input").value;
+            var chatlog = document.getElementById("chatlog");
+
+            if (user_input.trim() !== "") {
+                chatlog.innerHTML += "<div>You: " + user_input + "</div>";
+
+                fetch("/ask", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    body: "user_input=" + encodeURIComponent(user_input)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    chatlog.innerHTML += "<div>Bot: " + data.response + "</div>";
+                    document.getElementById("user_input").value = ""; // Clear input
+                    chatlog.scrollTop = chatlog.scrollHeight; // Scroll to bottom
+                });
+            }
+        }
+    </script>
+</body>
+</html>
